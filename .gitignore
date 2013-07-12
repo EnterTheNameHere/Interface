@@ -1,0 +1,14 @@
+
+Thumbs.db
+.cccc
+*.cppcheck
+
+/bin
+/obj
+
+*.layout
+*.depend
+CppCheckResults.xml
+cscope.out
+*.cscope_file_list
+*_build_log.html
