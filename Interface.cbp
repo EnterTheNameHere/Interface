@@ -91,7 +91,10 @@
 			<Add option="-D_UNICODE" />
 			<Add option="-DSFML_STATIC" />
 			<Add directory="Dependencies/SFML/include" />
+			<Add directory="Dependencies/jpeg/include" />
+			<Add directory="include" />
 		</Compiler>
+		<Unit filename="include/Utils/Utils.hpp" />
 		<Unit filename="src/Logger.cpp" />
 		<Unit filename="src/Logger.hpp" />
 		<Unit filename="src/main.cpp" />
