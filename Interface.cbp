@@ -29,10 +29,9 @@
 					<Add option="-pedantic" />
 					<Add option="-Wzero-as-null-pointer-constant" />
 					<Add option="-Wextra" />
-					<Add option="-Wold-style-cast" />
 					<Add option="-Wall" />
-					<Add option="-pg" />
 					<Add option="-g" />
+					<Add option="-Wold-style-cast" />
 					<Add option="-Wno-unknown-pragmas" />
 					<Add option="-Wformat=2" />
 					<Add option="-Wunused-local-typedefs" />
@@ -45,14 +44,11 @@
 					<Add option="-Winvalid-pch" />
 					<Add option="-Wvector-operation-performance" />
 					<Add option="-Wsign-promo" />
-					<Add option="-fstack-usage" />
 				</Compiler>
 				<Linker>
-					<Add option="-pg -lgmon" />
-					<Add library="mingw32" />
 					<Add library="Dependencies\SFML\lib\libsfml-graphics-s-d.a" />
 					<Add library="Dependencies\jpeg\lib\libjpeg-s.a" />
-					<Add library="glew" />
+					<Add library="Dependencies\glew\lib\libglew.a" />
 					<Add library="Dependencies\SFML\lib\libsfml-window-s-d.a" />
 					<Add library="Dependencies\SFML\lib\libsfml-system-s-d.a" />
 					<Add library="opengl32" />
@@ -70,6 +66,8 @@
 					<Add option="-fexpensive-optimizations" />
 					<Add option="-O3" />
 					<Add option="-Wdisabled-optimization" />
+					<Add option="-Wextra" />
+					<Add option="-Wall" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
