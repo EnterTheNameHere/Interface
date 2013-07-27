@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////
 //
 // SFML - Simple and Fast Multimedia Library
-// Copyright (C) 2007-2012 Laurent Gomila (laurent.gom@gmail.com)
+// Copyright (C) 2007-2013 Laurent Gomila (laurent.gom@gmail.com)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -215,7 +215,7 @@ private :
 ///
 /// The audio capture feature may not be supported or activated
 /// on every platform, thus it is recommended to check its
-/// availability with the IsAvailable() function. If it returns
+/// availability with the isAvailable() function. If it returns
 /// false, then any attempt to use an audio recorder will fail.
 ///
 /// It is important to note that the audio capture happens in a
