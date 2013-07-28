@@ -58,42 +58,42 @@ public:
     
     virtual void Draw( std::weak_ptr<sf::RenderTarget> renderTarget ) = 0;
     
-    void SetPosition( const ScreenPosition& position = {0,0} )
+    virtual void SetPosition( const ScreenPosition& position = {0,0} )
     {
         m_Rectangle.Position = position;
     }
     
-    const ScreenPosition& GetPosition() const
+    virtual const ScreenPosition& GetPosition() const
     {
         return ScreenPosition( m_Rectangle.Position );
     }
     
-    void SetSize( const ScreenSize& size = {0,0} )
+    virtual void SetSize( const ScreenSize& size = {0,0} )
     {
         m_Rectangle.Size = size;
     }
     
-    const ScreenSize& GetSize() const
+    virtual const ScreenSize& GetSize() const
     {
         return m_Rectangle.Size;
     }
     
-    void SetRectangle( const ScreenRectangle& rect = { {0,0}, {0,0} } )
+    virtual void SetRectangle( const ScreenRectangle& rect = { {0,0}, {0,0} } )
     {
         m_Rectangle = rect;
     }
     
-    const ScreenRectangle& GetRectangle() const
+    virtual const ScreenRectangle& GetRectangle() const
     {
         return m_Rectangle;
     }
     
-    void SetVisible( bool visible = false )
+    virtual void SetVisible( bool visible = false )
     {
         m_Visible = visible;
     }
     
-    bool IsVisible() const
+    virtual bool IsVisible() const
     {
         return m_Visible;
     }
@@ -225,7 +225,18 @@ public:
     
     void SetTextureRectangle( TextureRectangle rect )
     {
+        m_Sprite.setTextureRect(  { rect.Position.X,
+                                    rect.Position.Y,
+                                    rect.Size.Width,
+                                    rect.Size.Height } );
         
+        SetSize( rect.Size );
+    }
+    
+    void SetPosition( const ScreenPosition& position ) override
+    {
+        Drawable::SetPosition( position );
+        m_Sprite.setPosition( { static_cast<float>(position.X), static_cast<float>(position.Y) } );
     }
     
     std::shared_ptr<TextureManager> m_TextureManager;
@@ -335,18 +346,46 @@ public:
         image4->LoadImage( "Resources/Images/15x15.gif" );
         
         auto image5 = std::make_shared<Image>(m_TextureManager);
-        image5->LoadImage( "Resources/Images/multiple.tga" );
+        image5->LoadImage( "Resources/Images/Button.png" );
         
-        auto image6 = std::make_shared<Image>(m_TextureManager);
-        image6->LoadImage( "Resources/Images/Button.png" );
-        image6->m_Sprite.setColor( {255,0,255} );
+        window->m_Children.push_back( image1 );
+        window->m_Children.push_back( image2 );
+        window->m_Children.push_back( image3 );
+        window->m_Children.push_back( image4 );
+        window->m_Children.push_back( image5 );
         
-        window->m_Children.emplace_back( image1 );
-        window->m_Children.emplace_back( image2 );
-        window->m_Children.emplace_back( image3 );
-        window->m_Children.emplace_back( image4 );
-        window->m_Children.emplace_back( image5 );
-        window->m_Children.emplace_back( image6 );
+        
+        
+        auto multipleImage1 = std::make_shared<Image>(m_TextureManager);
+        multipleImage1->LoadImage( "Resources/Images/multiple.tga" );
+        multipleImage1->SetTextureRectangle( { {0,0},{200,300} } );
+        multipleImage1->SetPosition( {0,300} );
+        
+        auto multipleImage2 = std::make_shared<Image>(m_TextureManager);
+        multipleImage2->LoadImage( "Resources/Images/multiple.tga" );
+        multipleImage2->SetTextureRectangle( { {253,28},{151,61} } );
+        multipleImage2->SetPosition( {201,300} );
+        
+        auto multipleImage3 = std::make_shared<Image>(m_TextureManager);
+        multipleImage3->LoadImage( "Resources/Images/multiple.tga" );
+        multipleImage3->SetTextureRectangle( { {200,118},{164,182} } );
+        multipleImage3->SetPosition( {353,300} );
+        
+        auto multipleImage4 = std::make_shared<Image>(m_TextureManager);
+        multipleImage4->LoadImage( "Resources/Images/multiple.tga" );
+        multipleImage4->SetTextureRectangle( { {451,0},{249,233} } );
+        multipleImage4->SetPosition( {518,300} );
+        
+        auto multipleImage5 = std::make_shared<Image>(m_TextureManager);
+        multipleImage5->LoadImage( "Resources/Images/multiple.tga" );
+        multipleImage5->SetTextureRectangle( { {364,233},{336,67} } );
+        multipleImage5->SetPosition( {768,300} );
+        
+        window->m_Children.push_back( multipleImage1 );
+        window->m_Children.push_back( multipleImage2 );
+        window->m_Children.push_back( multipleImage3 );
+        window->m_Children.push_back( multipleImage4 );
+        window->m_Children.push_back( multipleImage5 );
         
         while( m_RenderWindow->isOpen() )
         {
