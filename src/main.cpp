@@ -14,12 +14,88 @@ struct ScreenPosition
     ScreenPosition( int x, int y ) :
         X( x ),
         Y( y )
-    {}
+    {
+    }
     
-    ScreenPosition( const sf::Vector2f& pos ) :
-        X( static_cast<int>( pos.x ) ),
-        Y( static_cast<int>( pos.y ) )
-    {}
+    ScreenPosition( const ScreenPosition& position )
+    {
+        this->X = position.X;
+        this->Y = position.Y;
+    }
+    
+    ScreenPosition& operator = ( const ScreenPosition& position )
+    {
+        this->X = position.X;
+        this->Y = position.Y;
+        
+        return *this;
+    }
+    
+    bool operator == ( const ScreenPosition& right ) const
+    {
+        if( (this->X == right.X) && (this->Y == right.Y) )
+            return true;
+        else
+            return false;
+    }
+    
+    bool operator != ( const ScreenPosition& right ) const
+    {
+        return (*this == right);
+    }
+    
+    ScreenPosition& operator += ( const ScreenPosition& right )
+    {
+        this->X += right.X;
+        this->Y += right.Y;
+        return *this;
+    }
+    
+    ScreenPosition& operator -= ( const ScreenPosition& right )
+    {
+        this->X -= right.X;
+        this->Y -= right.Y;
+        return *this;
+    }
+    
+    ScreenPosition& operator *= ( int multiplier )
+    {
+        this->X *= multiplier;
+        this->Y *= multiplier;
+        return *this;
+    }
+    
+    ScreenPosition& operator /= ( int divisor )
+    {
+        this->X /= divisor;
+        this->Y /= divisor;
+        return *this;
+    }
+    
+    const ScreenPosition operator + ( const ScreenPosition& right ) const
+    {
+        return (ScreenPosition(*this) += right);
+    }
+    
+    const ScreenPosition operator - ( const ScreenPosition& right ) const
+    {
+        return (ScreenPosition(*this) -= right);
+    }
+    
+    ScreenPosition operator * ( int multiplier )
+    {
+        return ScreenPosition(*this) *= multiplier;
+    }
+    
+    ScreenPosition operator / ( int divisor )
+    {
+        return ScreenPosition(*this) /= divisor;
+    }
+    
+    ScreenPosition operator - () const
+    {
+        return ScreenPosition(*this) * (-1);
+    }
     
     int X = 0;
     int Y = 0;
@@ -53,6 +129,13 @@ typedef ScreenRectangle TextureRectangle;
 class Drawable
 {
 public:
+    Drawable()
+    {
+        m_Border.setFillColor( sf::Color::Transparent );
+        m_Border.setOutlineThickness( 2 );
+        m_Border.setOutlineColor( sf::Color::Blue );
+    }
+    
     virtual ~Drawable()
     {}
     
@@ -61,16 +144,20 @@ public:
     virtual void SetPosition( const ScreenPosition& position = {0,0} )
     {
         m_Rectangle.Position = position;
+        
+        m_Border.setPosition( static_cast<float>(position.X), static_cast<float>(position.Y) );
     }
     
     virtual const ScreenPosition& GetPosition() const
     {
-        return ScreenPosition( m_Rectangle.Position );
+        return m_Rectangle.Position;
     }
     
     virtual void SetSize( const ScreenSize& size = {0,0} )
     {
         m_Rectangle.Size = size;
+        
+        m_Border.setSize( {static_cast<float>(size.Width), static_cast<float>(size.Height)} );
     }
     
     virtual const ScreenSize& GetSize() const
@@ -81,6 +168,9 @@ public:
     virtual void SetRectangle( const ScreenRectangle& rect = { {0,0}, {0,0} } )
     {
         m_Rectangle = rect;
+        
+        m_Border.setPosition( static_cast<float>(rect.Position.X), static_cast<float>(rect.Position.Y) );
+        m_Border.setSize( {static_cast<float>(rect.Size.Width), static_cast<float>(rect.Size.Height)} );
     }
     
     virtual const ScreenRectangle& GetRectangle() const
@@ -98,6 +188,8 @@ public:
         return m_Visible;
     }
     
+    sf::RectangleShape m_Border;
+    
 private:
     ScreenRectangle m_Rectangle = { {0,0}, {0,0} };
     bool m_Visible = true;
@@ -107,11 +199,6 @@ class Object
 {
 public:
     int m_ID;
-};
-
-class Button : Drawable
-{
-    
 };
 
 class CheckBox : Drawable
@@ -195,7 +282,7 @@ public:
 class Image : public Drawable
 {
 public:
-    Image( const std::shared_ptr<TextureManager>& manager ) :
+    Image( std::shared_ptr<TextureManager> manager ) :
         m_TextureManager( manager )
     {
     }
@@ -212,6 +299,7 @@ public:
         if( auto rt = renderTarget.lock() )
         {
             rt->draw( m_Sprite );
+            rt->draw( m_Border );
         }
     }
     
@@ -220,7 +308,11 @@ public:
         m_Texture = m_TextureManager->GetTexture( path );
         m_Sprite.setTexture( *m_Texture );
         
-        Drawable::SetPosition( m_Sprite.getPosition() );
+        sf::Vector2f position = m_Sprite.getPosition();
+        sf::IntRect rect = m_Sprite.getTextureRect();
+        
+        Drawable::SetPosition( {static_cast<int>(position.x), static_cast<int>(position.y)} );
+        Drawable::SetSize( {rect.width, rect.height} );
     }
     
     void SetTextureRectangle( TextureRectangle rect )
@@ -244,8 +336,146 @@ public:
     sf::Sprite m_Sprite = {};
 };
 
-class Label : Drawable
+class Label : public Drawable
 {
+public:    
+    Label( std::shared_ptr<sf::Font> font ) : Label( "", font )
+    {
+    }
+    
+    Label( sf::String text, std::shared_ptr<sf::Font> font, unsigned int fontSize = 12, unsigned int fontStyle = sf::Text::Regular ) : Drawable(),
+        m_Text( text, *font, fontSize ),
+        m_Font( font )
+    {
+        m_Text.setStyle( fontStyle );
+        
+        sf::FloatRect bounds = m_Text.getLocalBounds();
+        Drawable::SetSize( {static_cast<int>(bounds.width), static_cast<int>(bounds.height)} );
+    }
+    
+    virtual ~Label()
+    {
+    }
+    
+    virtual void Draw( std::weak_ptr<sf::RenderTarget> rt ) override
+    {
+        if( auto renderTarget = rt.lock() )
+        {
+            renderTarget->draw( m_Text );
+            renderTarget->draw( m_Border );
+        }
+    }
+    
+    virtual void SetText( const sf::String& text )
+    {
+        m_Text.setString( text );
+        
+        sf::FloatRect bounds = m_Text.getLocalBounds();
+        Drawable::SetSize( {static_cast<int>(bounds.width), static_cast<int>(bounds.height)} );
+    }
+    
+    virtual const sf::String& GetText() const
+    {
+        return m_Text.getString();
+    }
+    
+    virtual void SetFontSize( unsigned int size )
+    {
+        m_Text.setCharacterSize( size );
+        
+        sf::FloatRect bounds = m_Text.getLocalBounds();
+        Drawable::SetSize( {static_cast<int>(bounds.width), static_cast<int>(bounds.height)} );
+    }
+    
+    virtual unsigned int GetFontSize() const
+    {
+        return m_Text.getCharacterSize();
+    }
+    
+    virtual void SetFontStyle( unsigned int fontStyle )
+    {
+        m_Text.setStyle( fontStyle );
+        
+        sf::FloatRect bounds = m_Text.getLocalBounds();
+        Drawable::SetSize( {static_cast<int>(bounds.width), static_cast<int>(bounds.height)} );
+    }
+    
+    virtual unsigned int GetFontStyle() const
+    {
+        return m_Text.getStyle();
+    }
+    
+    virtual void SetFontColor( const sf::Color& color )
+    {
+        m_Text.setColor( color );
+    }
+    
+    virtual const sf::Color& GetFontColor() const
+    {
+        return m_Text.getColor();
+    }
+    
+    virtual void SetPosition( const ScreenPosition& position ) override
+    {
+        m_Text.setPosition( static_cast<float>(position.X), static_cast<float>(position.Y) );
+        Drawable::SetPosition( position );
+        
+        sf::FloatRect bounds = m_Text.getLocalBounds();
+        Drawable::SetSize( {static_cast<int>(bounds.width), static_cast<int>(bounds.height)} );
+    }
+    
+    virtual const ScreenPosition& GetPosition() const override
+    {
+        return Drawable::GetPosition();
+    }
+    
+    sf::Text m_Text = {};
+    std::shared_ptr<sf::Font> m_Font;
+};
+
+class Button : public Drawable
+{
+public:
+    Button( std::shared_ptr<TextureManager> manager, std::shared_ptr<sf::Font> font ) : Drawable(),
+        m_Background( Image(manager) ),
+        m_Text( font )
+    {
+    }
+    
+    virtual ~Button()
+    {
+    }
+    
+    virtual void Draw( std::weak_ptr<sf::RenderTarget> rt ) override
+    {
+        m_Background.Draw( rt );
+        m_Text.Draw( rt );
+    }
+    
+    virtual void LoadImage( const std::string& path )
+    {
+        m_Background.LoadImage( path );
+    }
+    
+    virtual void SetText( const sf::String& text )
+    {
+        m_Text.SetText( text );
+    }
+    
+    virtual const sf::String& GetText() const
+    {
+        return m_Text.GetText();
+    }
+    
+    virtual void SetPosition( const ScreenPosition& position ) override
+    {
+        m_Background.SetPosition( position );
+        // TODO: allow user to set the padding
+        m_Text.SetPosition( ( position + ScreenPosition(10, 10) ) );
+    }
+    
+    Image m_Background;
+    Label m_Text;
 };
 
 class ListBox : Drawable
@@ -292,7 +522,6 @@ public:
 };
 
 
-
 class WindowManager
 {
 public:
@@ -302,7 +531,8 @@ public:
     
     WindowManager( std::shared_ptr<sf::RenderWindow> renderWindow )
         : m_RenderWindow( renderWindow ),
-          m_TextureManager( std::make_shared<TextureManager>() )
+          m_TextureManager( std::make_shared<TextureManager>() ),
+          m_Font( std::make_shared<sf::Font>() )
     {
         Logger() << "WindowManager: created...\n";
     }
@@ -330,6 +560,11 @@ public:
             this->Initialise();
         m_RenderWindow->setFramerateLimit( 60 );
         
+        // TODO: report error
+        m_Font->loadFromFile("Resources/Fonts/DejaVuSerif.ttf");
+        
+        
+        
         std::shared_ptr<Window> window = std::make_shared<Window>();
         
         
@@ -345,14 +580,10 @@ public:
         auto image4 = std::make_shared<Image>(m_TextureManager);
         image4->LoadImage( "Resources/Images/15x15.gif" );
         
-        auto image5 = std::make_shared<Image>(m_TextureManager);
-        image5->LoadImage( "Resources/Images/Button.png" );
-        
         window->m_Children.push_back( image1 );
         window->m_Children.push_back( image2 );
         window->m_Children.push_back( image3 );
         window->m_Children.push_back( image4 );
-        window->m_Children.push_back( image5 );
         
         
         
@@ -386,6 +617,68 @@ public:
         window->m_Children.push_back( multipleImage3 );
         window->m_Children.push_back( multipleImage4 );
         window->m_Children.push_back( multipleImage5 );
+        
+        
+        
+        auto button1 = std::make_shared<Button>(m_TextureManager, m_Font);
+        button1->LoadImage( "Resources/Images/Button.png" );
+        button1->SetText( "Button" );
+        button1->m_Text.SetFontColor( sf::Color::Blue );
+        button1->SetPosition( {200,50} );
+        
+        window->m_Children.push_back( button1 );
+        
+        
+        
+        auto labelMousePosition = std::make_shared<Label>( m_Font );
+        labelMousePosition->SetText( "Mouse position:\nX: {%} Y: {%}" );
+        labelMousePosition->SetPosition( {5,5} );
+        labelMousePosition->SetFontSize( 12 );
+        labelMousePosition->SetFontColor( sf::Color::Black );
+        
+        auto labelBold = std::make_shared<Label>( "Bold text", m_Font, 14, sf::Text::Bold );
+        labelBold->SetPosition( {500,5} );
+        labelBold->SetFontColor( sf::Color::Black );
+        
+        auto labelItalic = std::make_shared<Label>( m_Font );
+        labelItalic->SetText( "Italic text" );
+        labelItalic->SetFontStyle( sf::Text::Italic );
+        labelItalic->SetFontSize( 15 );
+        labelItalic->SetPosition( {500,20} );
+        labelItalic->SetFontColor( sf::Color::Blue );
+        
+        auto labelUnderlined = std::make_shared<Label>( "Underlined text", m_Font );
+        labelUnderlined->SetFontStyle( sf::Text::Underlined );
+        labelUnderlined->SetFontSize( 20 );
+        labelUnderlined->SetPosition( {500,36} );
+        labelUnderlined->SetFontColor( sf::Color::Cyan );
+        
+        auto labelUnderlinedBoldItalic = std::make_shared<Label>( "UnderlinedBoldItalic text", m_Font, 12, sf::Text::Underlined | sf::Text::Bold | sf::Text::Italic );
+        labelUnderlinedBoldItalic->SetPosition( {500,57} );
+        labelUnderlinedBoldItalic->SetFontColor( sf::Color::Green );
+        
+        auto labelBoldItalic = std::make_shared<Label>( "BoldItalic text", m_Font, 12, sf::Text::Bold | sf::Text::Italic );
+        labelBoldItalic->SetPosition( {500,70} );
+        labelBoldItalic->SetFontColor( sf::Color::Magenta );
+        
+        auto labelUnderlinedBold = std::make_shared<Label>( "UnderlinedBold text", m_Font, 12, sf::Text::Underlined | sf::Text::Bold );
+        labelUnderlinedBold->SetPosition( {500,83} );
+        labelUnderlinedBold->SetFontColor( sf::Color::Red );
+        
+        auto labelUnderlinedItalic = std::make_shared<Label>( "UnderlinedItalic text", m_Font, 12, sf::Text::Underlined | sf::Text::Italic );
+        labelUnderlinedItalic->SetPosition( {500,96} );
+        labelUnderlinedItalic->SetFontColor( sf::Color::Yellow );
+        
+        window->m_Children.push_back( labelMousePosition );
+        window->m_Children.push_back( labelBold );
+        window->m_Children.push_back( labelItalic );
+        window->m_Children.push_back( labelUnderlined );
+        window->m_Children.push_back( labelUnderlinedBoldItalic );
+        window->m_Children.push_back( labelBoldItalic );
+        window->m_Children.push_back( labelUnderlinedBold );
+        window->m_Children.push_back( labelUnderlinedItalic );
+        
+        
         
         while( m_RenderWindow->isOpen() )
         {
@@ -456,6 +749,7 @@ public:
 private:
     std::shared_ptr<sf::RenderWindow> m_RenderWindow;
     std::shared_ptr<TextureManager> m_TextureManager;
+    std::shared_ptr<sf::Font> m_Font;
 };
 
 
