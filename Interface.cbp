@@ -81,6 +81,59 @@
 					<Add library="winmm" />
 				</Linker>
 			</Target>
+			<Target title="Tests">
+				<Option output="bin/Interface-DEBUG" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="bin" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-Wshadow" />
+					<Add option="-Winit-self" />
+					<Add option="-Wredundant-decls" />
+					<Add option="-Wcast-align" />
+					<Add option="-Wundef" />
+					<Add option="-Wfloat-equal" />
+					<Add option="-Winline" />
+					<Add option="-Wunreachable-code" />
+					<Add option="-Wmissing-declarations" />
+					<Add option="-Wmissing-include-dirs" />
+					<Add option="-Wswitch-default" />
+					<Add option="-Weffc++" />
+					<Add option="-Wmain" />
+					<Add option="-pedantic" />
+					<Add option="-Wzero-as-null-pointer-constant" />
+					<Add option="-Wextra" />
+					<Add option="-Wall" />
+					<Add option="-g" />
+					<Add option="-Wold-style-cast" />
+					<Add option="-Wno-unknown-pragmas" />
+					<Add option="-Wformat=2" />
+					<Add option="-Wunused-local-typedefs" />
+					<Add option="-Wuninitialized" />
+					<Add option="-Wtrampolines" />
+					<Add option="-Wunsafe-loop-optimizations" />
+					<Add option="-Wcast-qual" />
+					<Add option="-Wlogical-op" />
+					<Add option="-Wmissing-format-attribute" />
+					<Add option="-Winvalid-pch" />
+					<Add option="-Wvector-operation-performance" />
+					<Add option="-Wsign-promo" />
+					<Add option='-isystem &quot;$(#Boost)&quot;' />
+					<Add directory="../UTile/include" />
+					<Add directory="$(#Boost)" />
+				</Compiler>
+				<Linker>
+					<Add library="Dependencies\SFML\lib\libsfml-graphics-s-d.a" />
+					<Add library="Dependencies\jpeg\lib\libjpeg-s.a" />
+					<Add library="Dependencies\glew\lib\libglew.a" />
+					<Add library="Dependencies\SFML\lib\libsfml-window-s-d.a" />
+					<Add library="Dependencies\SFML\lib\libsfml-system-s-d.a" />
+					<Add library="opengl32" />
+					<Add library="gdi32" />
+					<Add library="winmm" />
+				</Linker>
+			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-std=c++11" />
@@ -94,10 +147,25 @@
 			<Add directory="Dependencies/jpeg/include" />
 			<Add directory="include" />
 		</Compiler>
-		<Unit filename="include/Utils/Utils.hpp" />
-		<Unit filename="src/Logger.cpp" />
-		<Unit filename="src/Logger.hpp" />
-		<Unit filename="src/main.cpp" />
+		<Unit filename="include/Utils/Utils.hpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/Logger.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/Logger.hpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/main.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="tests/testsMain.cpp">
+			<Option target="Tests" />
+		</Unit>
 		<Extensions>
 			<code_completion />
 			<envvars />
