@@ -5,7 +5,7 @@
 #include <string>
 #include <fstream>
 
-namespace WhoreMasterRenewal
+namespace Utils
 {
 
 class Logger
