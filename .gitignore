@@ -12,3 +12,6 @@ CppCheckResults.xml
 cscope.out
 *.cscope_file_list
 *_build_log.html
+
+/doxygen
+!/doxygen/Interface

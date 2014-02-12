@@ -65,15 +65,15 @@
 				<Compiler>
 					<Add option="-fexpensive-optimizations" />
 					<Add option="-O3" />
-					<Add option="-Wdisabled-optimization" />
 					<Add option="-Wextra" />
 					<Add option="-Wall" />
+					<Add option="-Wdisabled-optimization" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
 					<Add library="Dependencies\SFML\lib\libsfml-graphics-s.a" />
 					<Add library="Dependencies\jpeg\lib\libjpeg-s.a" />
-					<Add library="glew" />
+					<Add library="Dependencies\glew\lib\libglew.a" />
 					<Add library="Dependencies\SFML\lib\libsfml-window-s.a" />
 					<Add library="Dependencies\SFML\lib\libsfml-system-s.a" />
 					<Add library="opengl32" />
@@ -82,12 +82,13 @@
 				</Linker>
 			</Target>
 			<Target title="Tests">
-				<Option output="bin/Interface-DEBUG" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Interface-TESTS" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="bin" />
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
+					<Add option="-Wnon-virtual-dtor" />
 					<Add option="-Wshadow" />
 					<Add option="-Winit-self" />
 					<Add option="-Wredundant-decls" />
@@ -120,8 +121,8 @@
 					<Add option="-Wvector-operation-performance" />
 					<Add option="-Wsign-promo" />
 					<Add option='-isystem &quot;$(#Boost)&quot;' />
-					<Add directory="../UTile/include" />
 					<Add directory="$(#Boost)" />
+					<Add directory="$(#UTile)/include" />
 				</Compiler>
 				<Linker>
 					<Add library="Dependencies\SFML\lib\libsfml-graphics-s-d.a" />
@@ -136,7 +137,6 @@
 			</Target>
 		</Build>
 		<Compiler>
-			<Add option="-std=c++11" />
 			<Add option="-Wextra" />
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
@@ -147,21 +147,72 @@
 			<Add directory="Dependencies/jpeg/include" />
 			<Add directory="include" />
 		</Compiler>
+		<Unit filename="include/Button.hpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="include/Clickable.hpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="include/Drawable.hpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="include/Events.hpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="include/Image.hpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="include/Label.hpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="include/ScreenPosition.hpp" />
+		<Unit filename="include/ScreenRectangle.hpp">
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="include/ScreenSize.hpp" />
+		<Unit filename="include/TextureManager.hpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="include/UIObject.hpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="include/Utils/Logger.hpp" />
 		<Unit filename="include/Utils/Utils.hpp">
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
-		<Unit filename="src/Logger.cpp">
+		<Unit filename="include/Window.hpp">
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
-		<Unit filename="src/Logger.hpp">
+		<Unit filename="include/WindowManager.hpp">
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
+		<Unit filename="src/Utils/Logger.cpp" />
 		<Unit filename="src/main.cpp">
 			<Option target="Debug" />
 			<Option target="Release" />
+		</Unit>
+		<Unit filename="tests/testFormatString.cpp">
+			<Option target="Tests" />
+		</Unit>
+		<Unit filename="tests/testScreenPosition.cpp">
+			<Option target="Tests" />
+		</Unit>
+		<Unit filename="tests/testScreenRectangle.cpp">
+			<Option target="Tests" />
+		</Unit>
+		<Unit filename="tests/testScreenSize.cpp">
+			<Option target="Tests" />
 		</Unit>
 		<Unit filename="tests/testsMain.cpp">
 			<Option target="Tests" />

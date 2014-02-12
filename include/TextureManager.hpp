@@ -1,7 +1,7 @@
 #ifndef TEXTUREMANAGER_HPP_INCLUDED_1615
 #define TEXTUREMANAGER_HPP_INCLUDED_1615
 
-#include "Logger.hpp"
+#include "Utils/Logger.hpp"
 #include "Utils/Utils.hpp"
 
 #include <SFML/Graphics.hpp>

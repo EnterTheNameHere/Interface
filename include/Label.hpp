@@ -3,7 +3,7 @@
 
 namespace Interface
 {
-using WhoreMasterRenewal::Logger;
+using Utils::Logger;
 
 class Label : public UIObject, public Drawable
 {

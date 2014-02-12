@@ -6,7 +6,7 @@
 
 namespace Interface
 {
-using WhoreMasterRenewal::Logger;
+using Utils::Logger;
 
 class Button : public UIObject, public Clickable
 {

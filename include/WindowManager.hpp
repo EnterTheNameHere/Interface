@@ -13,7 +13,7 @@
 
 namespace Interface
 {
-using WhoreMasterRenewal::Logger;
+using Utils::Logger;
 
 
 class WindowManager

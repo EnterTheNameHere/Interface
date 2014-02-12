@@ -12,7 +12,7 @@
 
 namespace Interface
 {
-using WhoreMasterRenewal::Logger;
+using Utils::Logger;
 
 class Window : public UIObject, public Drawable, public Clickable
 {
