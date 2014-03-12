@@ -11,7 +11,8 @@ namespace Utils
 class Logger
 {
 public:
-    Logger( bool append = true, const std::string& filename = "GameLog.txt" );
+    Logger();
+    Logger( bool append, const std::string& filename );
     ~Logger();
     
     Logger& operator << ( char value );
@@ -30,9 +31,9 @@ public:
     Logger& operator << ( long double value );
     
     template<typename T>
-    Logger& operator << ( T& value );
+    Logger& operator << ( const T& value );
     
-    Logger& operator << ( std::string value );
+    Logger& operator << ( const std::string& value );
     
     Logger& operator << ( const char* value );
     Logger& operator << ( const unsigned char* value );

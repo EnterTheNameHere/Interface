@@ -13,7 +13,11 @@ namespace
     bool l_LoggingFileInitialized = false;
 }
 
-Logger::Logger( bool /*append*/, const std::string& filename )
+Logger::Logger()
+    : Logger( true, "GameLog.txt" )
+{}
+
+Logger::Logger( bool append, const std::string& filename )
 {
     // If not initialized, open file as non-append
     if( !l_LoggingFileInitialized )
@@ -186,7 +190,7 @@ Logger& Logger::operator << ( long double value )
 
 
 template<typename T>
-Logger& Logger::operator << ( T& value )
+Logger& Logger::operator << ( const T& value )
 {
     //sf::Lock lock( m_Mutex );
     {
@@ -199,7 +203,7 @@ Logger& Logger::operator << ( T& value )
     return *this;
 }
 
-Logger& Logger::operator << ( std::string value )
+Logger& Logger::operator << ( const std::string& value )
 {
     std::cout << value;
     if( m_LogFileStream.is_open() )
