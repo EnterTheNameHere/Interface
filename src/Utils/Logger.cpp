@@ -10,49 +10,27 @@ namespace Utils
 
 namespace
 {
-    bool l_LoggingFileInitialized = false;
+    bool local_WrittingToFileForFirstTime = true;
 }
 
 Logger::Logger()
-    : Logger( true, "GameLog.txt" )
+    : Logger( "LogOutput.txt" )
 {}
 
-Logger::Logger( bool append, const std::string& filename )
+// TODO: Add option to append and not to owerwrite log file.
+// TODO: Add option to set filename globally - now it would have
+//         to be set with every Logger("customfilename.txt") << call.
+Logger::Logger( const std::string& filename )
 {
-    // If not initialized, open file as non-append
-    if( !l_LoggingFileInitialized )
+    if( local_WrittingToFileForFirstTime )
     {
         m_LogFileStream.open( filename, std::ios_base::out );
-        l_LoggingFileInitialized = true;
+        local_WrittingToFileForFirstTime = false;
     }
     else
     {
         m_LogFileStream.open(  filename, std::ios_base::out | std::ios_base::app );
     }
-    
-    //if( m_FirstRun )
-    //{
-    //    sf::Lock lock( m_Mutex );
-    //    {
-    //        if( m_FirstRun )
-    //        {
-    //            m_FirstRun = false;
-    //            
-    //            if( append )
-    //                m_LogFileStream.open( filename, std::ios_base::out | std::ios_base::app );
-    //            else
-    //                m_LogFileStream.open( filename, std::ios_base::out );
-    //            
-    //            if( !m_LogFileStream.is_open() )
-    //            {
-    //                m_FailedToOpenLogFile = true;
-    //                
-    //                std::cerr << "Error: Failed to open \"" << filename << "\" file for logging.\n"
-    //                            << "Logging to file disabled. \n";
-    //            }
-    //        }
-    //    }
-    //}
 }
 Logger::~Logger()
 {
@@ -192,13 +170,9 @@ Logger& Logger::operator << ( long double value )
 template<typename T>
 Logger& Logger::operator << ( const T& value )
 {
-    //sf::Lock lock( m_Mutex );
-    {
-        std::cout << value;
-//               if( !m_FailedToOpenLogFile )
-        if( m_LogFileStream.is_open() )
-            m_LogFileStream << value;
-    }
+    std::cout << value;
+    if( m_LogFileStream.is_open() )
+        m_LogFileStream << value;
     
     return *this;
 }
@@ -236,6 +210,7 @@ Logger& Logger::operator << ( std::ostream& (*func)( std::ostream& ) )
     std::stringstream out;
     func(out);
     *this << out.str();
+    
     return *this;
 }
 
@@ -244,6 +219,7 @@ Logger& Logger::operator << ( std::ios& (*func)( std::ios& ) )
     std::stringstream out;
     func(out);
     *this << out.str();
+    
     return *this;
 }
 
@@ -252,10 +228,8 @@ Logger& Logger::operator << ( std::ios_base& (*func)( std::ios_base& ) )
     std::stringstream out;
     func(out);
     *this << out.str();
+    
     return *this;
 }
 
-//bool Logger::m_FailedToOpenLogFile = false;
-//bool Logger::m_FirstRun = true;
-
-} // namespace WhoreMasterRenewal
+} // namespace Utils

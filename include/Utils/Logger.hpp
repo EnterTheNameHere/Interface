@@ -12,7 +12,7 @@ class Logger
 {
 public:
     Logger();
-    Logger( bool append, const std::string& filename );
+    Logger( const std::string& filename );
     ~Logger();
     
     Logger& operator << ( char value );
@@ -44,12 +44,8 @@ public:
     
 private:
     std::ofstream m_LogFileStream = {};
-    //sf::Mutex m_Mutex;
-    
-    //static bool m_FirstRun;
-    //static bool m_FailedToOpenLogFile;
 };
 
-} // namespace WhoreMasterRenewal
+} // namespace Utils
 
 #endif // LOGGER_H_INCLUDED_0700
